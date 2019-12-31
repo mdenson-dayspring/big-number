@@ -14,11 +14,29 @@ This library was put together as an implementation of [Programming Praxis "Big N
 
 # Usage
 
-    var bigInt = require('dt-big-integer');
-    
-    var zero = bigInt();
-    var one = bigInt(1);
-    var bigger = bitInt(123456789);
+In Typescript
+```
+import { BigNumber } from '@dayspringpartners/big-number';
+
+const oneThousand = new BigNumber(1000);
+const bigger = new BigNumber(123456789);
+
+console.log(bigger.add(oneThousand).toNumber());
+console.log(oneThousand.add(5).toNumber());
+console.log(oneThousand.subtract(oneThousand).toNumber());
+```
+
+In Javascript
+```
+const BigNumber = require('@dayspringpartners/big-number').BigNumber;
+
+var oneThousand = new BigNumber(1000);
+var bigger = new BigNumber(123456789);
+
+console.log(bigger.add(oneThousand).toNumber());
+console.log(oneThousand.add(5).toNumber());
+console.log(oneThousand.subtract(oneThousand).toNumber());
+```
 
 ## Methods
 
@@ -83,6 +101,10 @@ $ npm publish
 ```
 
 # Release History
+
+* 1.0.1 Third Release 
+
+    Changed implementation to be be in Typescript. Updated to a hosted npm package.
 
 * 0.2.0 Second Release 
 

@@ -6,6 +6,9 @@
     "outDir": "./lib",
     "strict": true
   },
+  "exclude": ["node_modules", "**/__tests__/*"],
   "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "paths": {
+    "@dayspringpartners/big-number": ["src/index.ts"]
+  }
 }
