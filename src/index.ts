@@ -113,7 +113,7 @@ export class BigNumber {
     }
     return result;
   }
- public eq(other: number | BigNumber): boolean {
+  public eq(other: number | BigNumber): boolean {
     return this.compareTo(other) === 0;
   }
   public ne(other: number | BigNumber): boolean {
@@ -258,7 +258,7 @@ export class BigNumber {
       return 1;
     }
   }
-   /*
+  /*
    * assumes that the addends are positive
    * and that addend1 has the same or more digits
    */
