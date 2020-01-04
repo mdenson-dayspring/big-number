@@ -100,7 +100,7 @@ export class BigNumber {
       let tmp = new BigNumber(this);
       let remainder: BigNumber;
       let ret: string = '';
-      while(tmp.ne(0)) {
+      while (tmp.ne(0)) {
         [tmp, remainder] = tmp.divide(radix);
         ret = BigNumber.CHARS[remainder.toNumber()] + ret;
       }
