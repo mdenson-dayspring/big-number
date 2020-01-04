@@ -40,6 +40,12 @@ console.log(oneThousand.subtract(oneThousand).toNumber());
 
 ## Methods
 
+### constructor(number)
+### constructor(string) where string is radix = 10 only
+### constructor(BigNumber)
+
+### BigNumber.parseString(string, radix) where radix between 4 - 36
+
 ### toNumber()
 ### toString()
 
@@ -63,6 +69,7 @@ console.log(oneThousand.subtract(oneThousand).toNumber());
 ### add()
 ### subtract()
 ### multiply()
+### divide()
 
 # Contributing
 
