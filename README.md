@@ -47,7 +47,7 @@ console.log(oneThousand.subtract(oneThousand).toNumber());
 ### BigNumber.parseString(string, radix) where radix between 4 - 36
 
 ### toNumber()
-### toString()
+### toString(radix) where radix between 4 - 36 [default radix = 10]
 
 ### isZero()
 ### isNeg()
@@ -108,6 +108,10 @@ $ npm publish
 ```
 
 # Release History
+
+* 1.0.2 Fourth Release 
+
+    Completed implementation with division and string representation parsing and printing.
 
 * 1.0.1 Third Release 
 

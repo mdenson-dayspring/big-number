@@ -15,7 +15,7 @@ export class BigNumber {
     let sign = 1;
     if (str !== '') {
       [...str].forEach((char, ndx) => {
-        const val = BigNumber.CHARS.indexOf(char.toLowerCase());
+        const val = BigNumber.CHARS.indexOf(char.toUpperCase());
         if (ndx === 0 && val === -1 && char === '-') {
           sign = -1;
         } else if (val >= 0) {
@@ -30,7 +30,7 @@ export class BigNumber {
   };
 
   private static BI_BASE = 0x4000000; // 2^26 so there is not overflow in multiplication in the JS 2^53 ints
-  private static CHARS = '0123456789abcdefghijklmnopqrstuvwxyz';
+  private static CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   private static parseInput = (invalue: number | BigNumber): number[] => {
     let outvalue: number[] = [];
     if (invalue instanceof BigNumber) {
@@ -71,7 +71,9 @@ export class BigNumber {
 
   constructor(inVal?: string | number | number[] | BigNumber) {
     if (inVal) {
-      if (isArray(inVal)) {
+      if (inVal instanceof BigNumber) {
+        this.value = inVal.value.slice(0);
+      } else if (isArray(inVal)) {
         this.value = inVal;
       } else if (isString(inVal)) {
         this.value = BigNumber.parseString(inVal, 10).value;
@@ -86,8 +88,24 @@ export class BigNumber {
   /**
    * Right now this is outputing the default string output for the underlying array.
    */
-  public toString(): string {
-    return this.value.toString();
+  public toString(inRadix?: number): string {
+    let radix = inRadix;
+    if (radix === undefined) {
+      radix = 10;
+    }
+
+    if (radix === 0) {
+      return this.value.toString();
+    } else {
+      let tmp = new BigNumber(this);
+      let remainder: BigNumber;
+      let ret: string = '';
+      while(tmp.ne(0)) {
+        [tmp, remainder] = tmp.divide(radix);
+        ret = BigNumber.CHARS[remainder.toNumber()] + ret;
+      }
+      return ret;
+    }
   }
   /**
    * Of course the danger is that this will overflow.
