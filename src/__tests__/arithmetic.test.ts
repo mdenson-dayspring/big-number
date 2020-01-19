@@ -45,6 +45,10 @@ describe('BigNumber arithmetic', () => {
     it('division 30 / 15', () => {
       testBases(30, 15, 2, 0);
     });
+    it('division 998001 / 999', () => {
+      BigNumber.TEST_BI_BASE(5000);
+      expect(new BigNumber(998001).divide(999)[0].toString(0)).toEqual('1,999');
+    });
   });
 });
 

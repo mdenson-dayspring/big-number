@@ -67,6 +67,8 @@ export class BigNumber {
   public mul = this.multiply;
   public times = this.multiply;
 
+  // Array of integer digits plus a sign
+  //  [+/- length, least significant digit, ..., most significant digit]
   private value: number[];
 
   constructor(inVal?: string | number | number[] | BigNumber) {
@@ -331,12 +333,12 @@ export class BigNumber {
     const sum: number[] = [];
     sum.push(addend1[0]);
     let carry = 0;
-    for (let i = 1; i < addend1[0] + 1; i++) {
+    for (let i = 1; i <= addend1[0]; i++) {
       const a1 = addend1[i];
       const a2 = addend2.length > i ? addend2[i] : 0;
       const s = a1 + a2 + carry;
       sum.push(s % BigNumber.BI_BASE);
-      carry = Math.floor(s / BigNumber.BI_BASE);
+      carry = s >= BigNumber.BI_BASE ? 1 : 0;
     }
     if (carry > 0) {
       sum[0]++;
@@ -369,23 +371,53 @@ export class BigNumber {
     return diff.slice(0, diff[0] + 1);
   }
   /**
-   * Algorithm to multiply arbitary length positive numbers.
+   * Multiply using Algorithm M (Multiplication of nonnegative integers)
+   *  from Volume 2: Seminumerical Algorithms,
+   *       Chapter 4.3.1: Multiple-Precision Arithmetic : The Classical Algorithms
+   *    of The Art of Computer Programming by Donald Knuth
+   *
    *   Assume multiplicand is the longer array of digits
-   * @param multiplier: number[] Array of digits [length, most sig digit, ..., least sig digit]
-   * @param multiplicand: number[] Array of digits [length, most sig digit, ..., least sig digit]
+   * @param multiplier: number[] Array of digits [length, least sig digit, ..., most sig digit]
+   * @param multiplicand: number[] Array of digits [length, least sig digit, ..., most sig digit]
    * @return number[]
    */
   private multAlg(multiplier: number[], multiplicand: number[]): number[] {
-    let product: number[] = [0];
-    for (let i = 1; i <= multiplier[0]; i++) {
-      const tmp = [multiplicand[0] + (i - 1)];
-      for (let p = 1; p < i; p++) {
-        tmp.push(0);
+    const m = multiplier[0];
+    const n = multiplicand[0];
+    // M0. [Initialize]
+    const product: number[] = [m + n];
+    for (let i = 1; i <= product[0]; i++) {
+      product.push(0);
+    }
+    for (let j = 1; j <= m; j++) {
+      // M2. [zero multiplier?]
+      if (multiplier[j] === 0) {
+        product[j] = 0;
+      } else {
+        // M3. [initialize i]
+        let k = 0;
+        for (let i = 1; i <= n; i++) {
+          // M4. [Multiply and add]
+          const t = multiplicand[i] * multiplier[j] + product[i + j - 1] + k;
+          product[i + j - 1] = t % BigNumber.BI_BASE;
+          k = Math.floor(t / BigNumber.BI_BASE); // 0 <= k <= b
+
+          // M5. [loop on i]
+        }
+        product[n + j] = k;
       }
-      for (let j = 1; j <= multiplicand[0]; j++) {
-        tmp.push(multiplier[i] * multiplicand[j]);
+
+      // M6. [Loop on j]
+    }
+
+    // trim 0s in most common digits from representation
+    for (let i = m + n; i > 0; i--) {
+      if (product[i] === 0) {
+        product[0]--;
+        product.pop();
+      } else {
+        break;
       }
-      product = this.sum(tmp, product);
     }
     return product;
   }
@@ -415,19 +447,6 @@ export class BigNumber {
       R.push(0);
     }
 
-    // console.log(
-    //   'D0.',
-    //   JSON.stringify({
-    //     U: U,
-    //     V: V,
-    //     Q: Q,
-    //     R: R,
-    //     B: B,
-    //     n: n,
-    //     m: m
-    //   })
-    // );
-
     // D1. Normalize
     const D = V[n] < B / 2 ? Math.trunc(B / 2 / V[n]) : 1;
     // const D = 4;
@@ -436,11 +455,6 @@ export class BigNumber {
       U.push(0);
     }
     V = this.multAlg([1, D], V);
-    // console.log('D1.', JSON.stringify({
-    //   U: U,
-    //   V: V,
-    //   D: [1, D]
-    // }));
 
     // D2. initialize j / D7. loop on j
     for (let j = m + 1; j > 0; j--) {
@@ -449,7 +463,6 @@ export class BigNumber {
       let Q1 = Math.trunc(Num1 / V[n]);
       let R1 = Num1 % V[n];
 
-      // console.log('D3a.', JSON.stringify({j: j, Q1: Q1, R1: R1}));
       while (R1 < B && (Q1 === B || (n - 1 > 0 && Q1 * V[n - 1] > R1 * B + U[n - 2 + j]))) {
         Q1 = Q1 - 1;
         R1 = R1 + V[n];
@@ -459,7 +472,6 @@ export class BigNumber {
         Qfull.push(0);
       }
       Qfull.push(Q1);
-      // console.log('D3b.', JSON.stringify({j: j, Q1: Q1, Qfull: Qfull, R1: R1}));
 
       // D4. Multiply and subtract
       const midprod = this.multAlg(V, Qfull);
@@ -467,11 +479,9 @@ export class BigNumber {
       for (let i = U[0] + 1; i <= m + n + 1; i++) {
         U.push(0);
       }
-      // console.log('D4.', JSON.stringify({midprod: midprod, U: U}));
 
       // D5. Test remainder
       Q[j] = Q1;
-      // console.log('D5.', JSON.stringify({j: j, Q: Q}));
     }
 
     // D8. Unnormalize
@@ -501,7 +511,6 @@ export class BigNumber {
     Q = Q.slice(0, end + 1);
     Q[0] = Q.length - 1;
 
-    // console.log('D8.', JSON.stringify({Q: Q, R: R}));
     return [Q, R];
   }
 }

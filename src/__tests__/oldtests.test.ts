@@ -25,6 +25,9 @@ describe('#factory BigNumber()', () => {
 });
 
 describe('#conversion', () => {
+  beforeEach(() => {
+    BigNumber.TEST_BI_BASE(1000);
+  });
   it('to javascript numbers', () => {
     expect(new BigNumber(0).toNumber()).toEqual(0);
     expect(new BigNumber(1).toNumber()).toEqual(1);
@@ -40,6 +43,9 @@ describe('#conversion', () => {
 });
 
 describe('#methods', () => {
+  beforeEach(() => {
+    BigNumber.TEST_BI_BASE(1000);
+  });
   it('abs', () => {
     expect(new BigNumber(0).abs().toNumber()).toEqual(0);
     expect(new BigNumber(1).abs().toNumber()).toEqual(1);
@@ -62,12 +68,16 @@ describe('#methods', () => {
     expect(new BigNumber(-1000).sign()).toEqual(-1);
   });
   it('add - positive addends', () => {
+    expect(new BigNumber(1234).toString(0)).toEqual('2,234,1');
     expect(new BigNumber(1234).add(1834).toNumber()).toEqual(3068);
+    expect(new BigNumber(1234).add(1834).toString(0)).toEqual('2,68,3');
     expect(new BigNumber(234).add(1834).toNumber()).toEqual(2068);
     expect(new BigNumber(1234).add(834).toNumber()).toEqual(2068);
     expect(new BigNumber(234).add(834).toNumber()).toEqual(1068);
     expect(new BigNumber(1234).add(0).toNumber()).toEqual(1234);
     expect(new BigNumber(0).add(999).toNumber()).toEqual(999);
+    expect(new BigNumber(999).add(1).toNumber()).toEqual(1000);
+    expect(new BigNumber(999).add(1).toString(0)).toEqual('2,0,1');
   });
   it('add - negative addends', () => {
     expect(new BigNumber(-1234).add(-1834).toNumber()).toEqual(-3068);
@@ -108,15 +118,46 @@ describe('#methods', () => {
     // check that synonym exists
     expect(new BigNumber(1).sub(1).toNumber()).toEqual(0);
   });
-  it('multiply', () => {
+  it('multiply base 10', () => {
+    BigNumber.TEST_BI_BASE(10);
+    expect(new BigNumber(914).multiply(84).toNumber()).toEqual(76776);
+    expect(new BigNumber(84).multiply(914).toNumber()).toEqual(76776);
+
     expect(new BigNumber(0).multiply(1000).toNumber()).toEqual(0);
     expect(new BigNumber(1000).multiply(0).toNumber()).toEqual(0);
     expect(new BigNumber(1).multiply(1).toNumber()).toEqual(1);
     expect(new BigNumber(-1).multiply(-1).toNumber()).toEqual(1);
     expect(new BigNumber(-1).multiply(1).toNumber()).toEqual(-1);
     expect(new BigNumber(1).multiply(-1).toNumber()).toEqual(-1);
+    expect(new BigNumber(1).multiply(999).toNumber()).toEqual(999);
+    expect(new BigNumber(1).multiply(998001).toNumber()).toEqual(998001);
+    expect(new BigNumber(400).multiply(2).toString(0)).toEqual('3,0,0,8');
+    expect(new BigNumber(500).multiply(2).toString(0)).toEqual('4,0,0,0,1');
+    expect(new BigNumber(500).multiply(4).toString(0)).toEqual('4,0,0,0,2');
+    expect(new BigNumber(600).multiply(30).toString(0)).toEqual('5,0,0,0,8,1');
+    expect(new BigNumber(999).multiply(999).toString(0)).toEqual('6,1,0,0,8,9,9');
+    // expect(new BigNumber(999999).multiply(999999).toString(0)).toEqual('4,1,0,998,999');
+
+    // check that synonyms exists
+    expect(new BigNumber(0).mul(1000).toNumber()).toEqual(0);
+    expect(new BigNumber(0).times(1000).toNumber()).toEqual(0);
+  });
+  it('multiply base 1000', () => {
+    BigNumber.TEST_BI_BASE(1000);
+    expect(new BigNumber(914).multiply(84).toNumber()).toEqual(76776);
+
+    expect(new BigNumber(0).multiply(1000).toNumber()).toEqual(0);
+    expect(new BigNumber(1000).multiply(0).toNumber()).toEqual(0);
+    expect(new BigNumber(1).multiply(1).toNumber()).toEqual(1);
+    expect(new BigNumber(-1).multiply(-1).toNumber()).toEqual(1);
+    expect(new BigNumber(-1).multiply(1).toNumber()).toEqual(-1);
+    expect(new BigNumber(1).multiply(-1).toNumber()).toEqual(-1);
+    expect(new BigNumber(1).multiply(999).toNumber()).toEqual(999);
+    expect(new BigNumber(1).multiply(998001).toNumber()).toEqual(998001);
     expect(new BigNumber(400).multiply(2).toString(0)).toEqual('1,800');
     expect(new BigNumber(500).multiply(2).toString(0)).toEqual('2,0,1');
+    expect(new BigNumber(500).multiply(4).toString(0)).toEqual('2,0,2');
+    expect(new BigNumber(600).multiply(30).toString(0)).toEqual('2,0,18');
     expect(new BigNumber(999).multiply(999).toString(0)).toEqual('2,1,998');
     expect(new BigNumber(999999).multiply(999999).toString(0)).toEqual('4,1,0,998,999');
 
@@ -127,6 +168,9 @@ describe('#methods', () => {
 });
 
 describe('#comparison', () => {
+  beforeEach(() => {
+    BigNumber.TEST_BI_BASE(1000);
+  });
   it('compareTo(BigNumber)', () => {
     expect(new BigNumber(0).compareTo(new BigNumber(0))).toEqual(0);
     expect(new BigNumber(1).compareTo(new BigNumber(0))).toEqual(1);
@@ -213,6 +257,9 @@ describe('#comparison', () => {
 });
 
 describe('#predicates', () => {
+  beforeEach(() => {
+    BigNumber.TEST_BI_BASE(1000);
+  });
   it('isZero', () => {
     expect(new BigNumber(0).isZero()).toEqual(true);
     expect(new BigNumber(1).isZero()).toEqual(false);
