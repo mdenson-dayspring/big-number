@@ -210,9 +210,9 @@ export class BigNumber {
     if (thisv[0] >= 0 && otherv[0] >= 0) {
       // Sum of two positive addends
       if (thisv[0] >= otherv[0]) {
-        return new BigNumber(this.sum(thisv, otherv));
+        return new BigNumber(this.addAlg(thisv, otherv));
       } else {
-        return new BigNumber(this.sum(otherv, thisv));
+        return new BigNumber(this.addAlg(otherv, thisv));
       }
     } else if (thisv[0] <= 0 && otherv[0] <= 0) {
       // Sum of two negative addends
@@ -220,9 +220,9 @@ export class BigNumber {
       otherv[0] = -1 * otherv[0];
       let sumv: number[];
       if (thisv[0] >= otherv[0]) {
-        sumv = this.sum(thisv, otherv);
+        sumv = this.addAlg(thisv, otherv);
       } else {
-        sumv = this.sum(otherv, thisv);
+        sumv = this.addAlg(otherv, thisv);
       }
       sumv[0] = -1 * sumv[0];
       return new BigNumber(sumv);
@@ -239,9 +239,9 @@ export class BigNumber {
 
       let diffv: number[];
       if (thisGT) {
-        diffv = this.diff(absthis.value, absother.value);
+        diffv = this.subtractAlg(absthis.value, absother.value);
       } else {
-        diffv = this.diff(absother.value, absthis.value);
+        diffv = this.subtractAlg(absother.value, absthis.value);
       }
 
       if ((thisNeg && thisGT) || (!thisNeg && !thisGT)) {
@@ -284,7 +284,7 @@ export class BigNumber {
           multiplier = thisabs.value.slice(0);
           multiplicand = otherabs.value.slice(0);
         }
-        productv = this.multAlg(multiplier, multiplicand);
+        productv = this.multiplyAlg(multiplier, multiplicand);
       }
       if (this.sign() !== other.sign()) {
         productv[0] = -1 * productv[0];
@@ -329,7 +329,7 @@ export class BigNumber {
    * assumes that the addends are positive
    * and that addend1 has the same or more digits
    */
-  private sum(addend1: number[], addend2: number[]): number[] {
+  private addAlg(addend1: number[], addend2: number[]): number[] {
     const sum: number[] = [];
     sum.push(addend1[0]);
     let carry = 0;
@@ -349,7 +349,7 @@ export class BigNumber {
   /*
    * assumes that the minuend is larger that the subtrahend
    */
-  private diff(minuend: number[], subtrahend: number[]): number[] {
+  private subtractAlg(minuend: number[], subtrahend: number[]): number[] {
     const diff: number[] = [];
     diff.push(minuend[0]);
     let carry = 0;
@@ -381,7 +381,7 @@ export class BigNumber {
    * @param multiplicand: number[] Array of digits [length, least sig digit, ..., most sig digit]
    * @return number[]
    */
-  private multAlg(multiplier: number[], multiplicand: number[]): number[] {
+  private multiplyAlg(multiplier: number[], multiplicand: number[]): number[] {
     const m = multiplier[0];
     const n = multiplicand[0];
     // M0. [Initialize]
@@ -450,11 +450,11 @@ export class BigNumber {
     // D1. Normalize
     const D = V[n] < B / 2 ? Math.trunc(B / 2 / V[n]) : 1;
     // const D = 4;
-    U = this.multAlg([1, D], U);
+    U = this.multiplyAlg([1, D], U);
     if (U[0] < m + n + 1) {
       U.push(0);
     }
-    V = this.multAlg([1, D], V);
+    V = this.multiplyAlg([1, D], V);
 
     // D2. initialize j / D7. loop on j
     for (let j = m + 1; j > 0; j--) {
@@ -474,8 +474,8 @@ export class BigNumber {
       Qfull.push(Q1);
 
       // D4. Multiply and subtract
-      const midprod = this.multAlg(V, Qfull);
-      U = this.diff(U, midprod);
+      const midprod = this.multiplyAlg(V, Qfull);
+      U = this.subtractAlg(U, midprod);
       for (let i = U[0] + 1; i <= m + n + 1; i++) {
         U.push(0);
       }
