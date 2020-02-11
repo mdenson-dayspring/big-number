@@ -131,6 +131,12 @@ $ npm publish
 
 # Release History
 
+* 1.0.3 Fifth Release 
+
+    - Some refactoring of code and tests.
+    - Changed the text representation of the value used by parseString and toString methods. The text
+    representation is now based on the specification of integer literals used by PostScript language.
+
 * 1.0.2 Fourth Release 
 
     Completed implementation with division and string representation parsing and printing.
