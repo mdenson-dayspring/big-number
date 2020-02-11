@@ -30,14 +30,14 @@ export class BigNumber {
 
   private static BI_BASE = 0x4000000; // 2^26 so there is not overflow in multiplication in the JS 2^53 ints
   private static CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  private static scanString = (str: string): {radix: number, text: string} => {
+  private static scanString = (str: string): { radix: number; text: string } => {
     let radix = 10;
     const ndx = str.indexOf('#');
     if (ndx > -1) {
       radix = Number(str.substr(0, ndx));
-   }
-    return {radix, text: str.substr(ndx + 1)};
-  }
+    }
+    return { radix, text: str.substr(ndx + 1) };
+  };
   private static parseInput = (invalue: number | BigNumber): number[] => {
     let outvalue: number[] = [];
     if (invalue instanceof BigNumber) {
