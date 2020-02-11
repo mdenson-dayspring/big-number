@@ -4,17 +4,16 @@ export class BigNumber {
   public static TEST_BI_BASE = (val: number) => {
     BigNumber.BI_BASE = val;
   };
-  public static parseString = (str: string, inRadix?: number): BigNumber => {
+
+  public static parseString = (str: string): BigNumber => {
     let outValue = new BigNumber(0);
-    let radix: number;
-    if (inRadix === undefined) {
-      radix = 10;
-    } else {
-      radix = inRadix;
-    }
+    const scanned = BigNumber.scanString(str);
+    const radix = scanned.radix;
+    const text = scanned.text;
+
     let sign = 1;
-    if (str !== '') {
-      [...str].forEach((char, ndx) => {
+    if (text !== '') {
+      [...text].forEach((char, ndx) => {
         const val = BigNumber.CHARS.indexOf(char.toUpperCase());
         if (ndx === 0 && val === -1 && char === '-') {
           sign = -1;
@@ -31,6 +30,14 @@ export class BigNumber {
 
   private static BI_BASE = 0x4000000; // 2^26 so there is not overflow in multiplication in the JS 2^53 ints
   private static CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  private static scanString = (str: string): {radix: number, text: string} => {
+    let radix = 10;
+    const ndx = str.indexOf('#');
+    if (ndx > -1) {
+      radix = Number(str.substr(0, ndx));
+   }
+    return {radix, text: str.substr(ndx + 1)};
+  }
   private static parseInput = (invalue: number | BigNumber): number[] => {
     let outvalue: number[] = [];
     if (invalue instanceof BigNumber) {
@@ -78,7 +85,7 @@ export class BigNumber {
       } else if (isArray(inVal)) {
         this.value = inVal;
       } else if (isString(inVal)) {
-        this.value = BigNumber.parseString(inVal, 10).value;
+        this.value = BigNumber.parseString(inVal).value;
       } else {
         this.value = BigNumber.parseInput(inVal);
       }
@@ -90,10 +97,14 @@ export class BigNumber {
   /**
    * Right now this is outputing the default string output for the underlying array.
    */
-  public toString(inRadix?: number): string {
+  public toString(inRadix?: number, parsable?: boolean): string {
     let radix = inRadix;
     if (radix === undefined) {
       radix = 10;
+    }
+    let prefix = '';
+    if (parsable !== undefined && parsable && radix !== 10) {
+      prefix = String(radix) + '#';
     }
 
     if (radix === 0) {
@@ -106,7 +117,7 @@ export class BigNumber {
         [tmp, remainder] = tmp.divide(radix);
         ret = BigNumber.CHARS[remainder.toNumber()] + ret;
       }
-      return ret;
+      return prefix + ret;
     }
   }
   /**
