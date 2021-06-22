@@ -1,6 +1,6 @@
 {
   "name": "@dayspringpartners/big-number",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "big-number -- library of functions that provide arithmetic on big numbers",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
