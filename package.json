@@ -4,13 +4,12 @@
   "description": "big-number -- library of functions that provide arithmetic on big numbers",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.25",
-    "jest": "^24.9.0",
+    "jest": "^27.0.1",
     "prettier": "^1.19.1",
-    "ts-jest": "^24.3.0",
+    "ts-jest": "^27.0.3",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.7.5"
